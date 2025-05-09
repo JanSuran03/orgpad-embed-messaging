@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Sender</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    .form-section { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 5px; }
+    textarea, input { width: 100%; box-sizing: border-box; padding: 8px; margin-bottom: 10px; }
+    button { padding: 8px 16px; }
+  </style>
+</head>
+<body>
+  <!-- Section 1: Set Location -->
+  <div class="form-section" id="location-section">
+    <label for="location-input">Location ID:</label>
+    <textarea id="location-input" rows="2" placeholder="Enter location ID"></textarea>
+    <button id="location-send-btn">Send</button>
+  </div>
+
+  <!-- Section 2: Send Message -->
+  <div class="form-section" id="message-section">
+    <label for="target-input">Target:</label>
+    <input type="text" id="target-input" placeholder="Enter target">
+    <button id="target-btn">Set Target</button>
+
+    <label for="message-input">Message:</label>
+    <input type="text" id="message-input" placeholder="Enter message">
+    <button id="message-btn">Send Message</button>
+  </div>
+
+  <script>
+    // Helper to post to parent
+    function postToParent(obj) {
+      window.parent.postMessage(JSON.stringify(obj), '*');
+    }
+
+    // Section 1: location form
+    const locInput = document.getElementById('location-input');
+    const locBtn = document.getElementById('location-send-btn');
+
+    function sendLocation() {
+      const locationId = locInput.value.trim();
+      if (!locationId) return;
+      postToParent({ type: 'set-location', 'location-id': locationId });
+      locInput.value = '';
+    }
+
+    locBtn.addEventListener('click', sendLocation);
+    locInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendLocation();
+      }
+    });
+
+    // Section 2: message form
+    const targetInput = document.getElementById('target-input');
+    const messageInput = document.getElementById('message-input');
+    const targetBtn = document.getElementById('target-btn');
+    const messageBtn = document.getElementById('message-btn');
+
+    function sendMessagePayload() {
+      const target = targetInput.value.trim();
+      const message = messageInput.value.trim();
+      if (!target && !message) return;
+      postToParent({ type: 'send-message', target: target, message: message });
+    }
+
+    targetBtn.addEventListener('click', sendMessagePayload);
+    messageBtn.addEventListener('click', sendMessagePayload);
+
+    [targetInput, messageInput].forEach(input => {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          sendMessagePayload();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
