@@ -58,7 +58,7 @@
             const btn = document.createElement('button');
             btn.textContent = loc;
             btn.addEventListener('click', () => {
-                postToParent({type: 'set-location', 'location-id': loc});
+                postToParent({type: 'set-location', 'location': loc});
             });
             container.appendChild(btn);
         });

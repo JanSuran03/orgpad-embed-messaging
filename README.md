@@ -1,5 +1,7 @@
 A set of websites used to test embed communication in OrgPad:
 
+[See the documentation here](https://orgpad.info/s/embed-messaging)
+
 ### send-message
 Accepts query parameters of
 - `username` - the message sender
