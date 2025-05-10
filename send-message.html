@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: sans-serif;
-            margin: 20px;
+            margin: 0px;
         }
 
         .section {
@@ -27,12 +27,28 @@
         }
 
         button {
-            padding: 8px 16px;
-            margin-right: 10px;
+            display: inline-block;
+            padding: 0.75em 1.5em;
+            margin: 10px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a1b1f;
+            background: #B6E5FF;
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+
+        }
+
+        button:hover {
+            background: #98e3ff;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
         .messages-container {
-            border: 1px solid #ccc;
+            border: 1px solid black;
+            font-size: 1.2em;
             padding: 10px;
             height: 200px;
             overflow-y: auto;
@@ -47,6 +63,25 @@
             font-weight: bold;
             margin-bottom: 10px;
         }
+
+        .message-input {
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+            align-items: center;
+            align-content: center;
+            justify-items: center;
+            justify-content: center;
+        }
+
+        input {
+            font-size: 1.6em;
+            margin: 0;
+        }
+
+        #messages-title {
+            font-size: 1.3em;
+        }
     </style>
 </head>
 <body>
@@ -54,18 +89,11 @@
 <div class="section username-display" id="username-display"></div>
 
 <!-- Messages Display -->
-<div class="section">
-    <h2 id="messages-title"></h2>
-    <div id="messages" class="messages-container">Waiting for messages...</div>
-</div>
+<div id="messages" class="messages-container"></div>
 
 <!-- Send Message Form -->
-<div class="section">
-    <label for="target-input">Target Username:</label>
-    <input type="text" id="target-input" placeholder="Enter target username"/>
-
-    <label for="message-input">Message:</label>
-    <textarea id="message-input" rows="3" placeholder="Enter your message"></textarea>
+<div class="section message-input">
+    <input id="message-input" placeholder="Enter message"></input>
     <button id="send-message-btn">Send</button>
 </div>
 
@@ -73,8 +101,7 @@
     // Get current username from query
     const params = new URLSearchParams(window.location.search);
     const username = params.get('username')?.trim() || 'Anonymous';
-    document.getElementById('username-display').textContent = `You are: ${username}`;
-    document.getElementById('messages-title').textContent = `Messages for ${username}`;
+    const target_username = params.get('target').trim();
 
     // Helper: post messages as JSON strings
     function postToParent(obj) {
@@ -86,9 +113,8 @@
         const msg = e.data;
         if (!msg || !msg.username || !msg.text) return;
         const container = document.getElementById('messages');
-        if (container.textContent === 'Waiting for messages...') container.textContent = '';
         const div = document.createElement('div');
-        div.textContent = `${msg.username}: ${msg.text}`;
+        div.innerHTML = `<b>${msg.username}:</b> ${msg.text}`;
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
     });
@@ -104,10 +130,9 @@
         }));
 
     function sendMessage() {
-        const target = document.getElementById('target-input').value.trim();
         const text = document.getElementById('message-input').value.trim();
-        if (!target || !text) return;
-        const payload = {type: 'send-message', target, message: {username: username, text: text}};
+        if (!text) return;
+        const payload = {type: 'send-message', target: target_username, message: {username: username, text: text}};
         postToParent(payload);
         document.getElementById('message-input').value = '';
     }
