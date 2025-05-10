@@ -121,13 +121,12 @@
 
     // Send message in required format
     document.getElementById('send-message-btn').addEventListener('click', sendMessage);
-    [document.getElementById('target-input'), document.getElementById('message-input')]
-        .forEach(el => el.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && (el.id === 'target-input' || (!e.shiftKey && el.id === 'message-input'))) {
-                e.preventDefault();
-                sendMessage();
-            }
-        }));
+    document.getElementById('message-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
 
     function sendMessage() {
         const text = document.getElementById('message-input').value.trim();
