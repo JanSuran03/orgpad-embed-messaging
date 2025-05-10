@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Message Embed</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            margin-right: 10px;
+        }
+
+        .messages-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            background: #f9f9f9;
+        }
+
+        .messages-container div {
+            margin-bottom: 5px;
+        }
+
+        .username-display {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<!-- Display Username -->
+<div class="section username-display" id="username-display"></div>
+
+<!-- Messages Display -->
+<div class="section">
+    <h2 id="messages-title"></h2>
+    <div id="messages" class="messages-container">Waiting for messages...</div>
+</div>
+
+<!-- Send Message Form -->
+<div class="section">
+    <label for="target-input">Target Username:</label>
+    <input type="text" id="target-input" placeholder="Enter target username"/>
+
+    <label for="message-input">Message:</label>
+    <textarea id="message-input" rows="3" placeholder="Enter your message"></textarea>
+    <button id="send-message-btn">Send</button>
+</div>
+
+<script>
+    // Get current username from query
+    const params = new URLSearchParams(window.location.search);
+    const username = params.get('username')?.trim() || 'Anonymous';
+    document.getElementById('username-display').textContent = `You are: ${username}`;
+    document.getElementById('messages-title').textContent = `Messages for ${username}`;
+
+    // Helper: post messages as JSON strings
+    function postToParent(obj) {
+        window.parent.postMessage(JSON.stringify(obj), '*');
+    }
+
+    // Listen for all incoming messages, whether strings or objects
+    window.addEventListener('message', (e) => {
+        const msg = e.data;
+        if (!msg || !msg.username || !msg.text) return;
+        const container = document.getElementById('messages');
+        if (container.textContent === 'Waiting for messages...') container.textContent = '';
+        const div = document.createElement('div');
+        div.textContent = `${msg.username}: ${msg.text}`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    });
+
+    // Send message in required format
+    document.getElementById('send-message-btn').addEventListener('click', sendMessage);
+    [document.getElementById('target-input'), document.getElementById('message-input')]
+        .forEach(el => el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && (el.id === 'target-input' || (!e.shiftKey && el.id === 'message-input'))) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }));
+
+    function sendMessage() {
+        const target = document.getElementById('target-input').value.trim();
+        const text = document.getElementById('message-input').value.trim();
+        if (!target || !text) return;
+        const payload = {type: 'send-message', target, message: {username: username, text: text}};
+        postToParent(payload);
+        document.getElementById('message-input').value = '';
+    }
+</script>
+</body>
+</html>
