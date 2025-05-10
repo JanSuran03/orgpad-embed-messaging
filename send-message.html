@@ -7,16 +7,7 @@
     <style>
         body {
             font-family: sans-serif;
-            margin: 0px;
-        }
-
-        .section {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
+            margin: 0;
         }
 
         input, textarea {
@@ -28,9 +19,9 @@
 
         button {
             display: inline-block;
-            padding: 0.75em 1.5em;
+            padding: 13px 26px;
             margin: 10px;
-            font-size: 1.25rem;
+            font-size: 1.4rem;
             font-weight: 600;
             color: #1a1b1f;
             background: #B6E5FF;
@@ -46,6 +37,12 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
         .messages-container {
             border: 1px solid black;
             font-size: 1.2em;
@@ -53,15 +50,11 @@
             height: 200px;
             overflow-y: auto;
             background: #f9f9f9;
+            flex-grow: 1;
         }
 
         .messages-container div {
             margin-bottom: 5px;
-        }
-
-        .username-display {
-            font-weight: bold;
-            margin-bottom: 10px;
         }
 
         .message-input {
@@ -78,23 +71,19 @@
             font-size: 1.6em;
             margin: 0;
         }
-
-        #messages-title {
-            font-size: 1.3em;
-        }
     </style>
 </head>
 <body>
-<!-- Display Username -->
-<div class="section username-display" id="username-display"></div>
 
-<!-- Messages Display -->
-<div id="messages" class="messages-container"></div>
+<div id="app">
+    <!-- Messages Display -->
+    <div id="messages" class="messages-container"></div>
 
-<!-- Send Message Form -->
-<div class="section message-input">
-    <input id="message-input" placeholder="Enter message"></input>
-    <button id="send-message-btn">Send</button>
+    <!-- Send Message Form -->
+    <div class="message-input">
+        <input id="message-input" placeholder="Enter message"></input>
+        <button id="send-message-btn">Send</button>
+    </div>
 </div>
 
 <script>
